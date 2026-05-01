@@ -1,19 +1,23 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY || '');
-
 export async function sendThankYouEmail(email: string) {
-  if (!process.env.RESEND_API_KEY) {
-    console.warn('RESEND_API_KEY not configured — skipping email');
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    console.error('RESEND_API_KEY not configured — skipping email');
     return;
   }
 
   try {
-    await resend.emails.send({
-      from: 'RemindFlow <hello@remindflow.app>',
-      to: email,
-      subject: "You're in! 🎉 Welcome to RemindFlow",
-      html: `
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'RemindFlow <onboarding@resend.dev>',
+        to: email,
+        subject: "You're in! 🎉 Welcome to RemindFlow",
+        html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -142,9 +146,17 @@ export async function sendThankYouEmail(email: string) {
         </body>
         </html>
       `,
+      }),
     });
 
-    console.log(`Thank you email sent to ${email}`);
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error('Resend API error:', result);
+      return;
+    }
+
+    console.log(`Thank you email sent to ${email}:`, result.id);
   } catch (error) {
     console.error('Failed to send thank you email:', error);
   }
