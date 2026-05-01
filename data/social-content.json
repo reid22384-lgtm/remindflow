@@ -1,0 +1,20 @@
+[
+  {
+    "platform": "twitter",
+    "type": "thread",
+    "content": "Freelancers: you're losing an average of $2,400 to unpaid invoices.\n\nNot because clients refuse to pay.\nBecause nobody reminded them.\n\nI'm building a tool to fix this. Here's how it works: 🧵\n\n1/ Connect your invoices (Stripe, Wave, PayPal, or CSV)\n2/ Set your reminder schedule (3, 7, 14, 30 days)\n3/ Polite, professional emails go out automatically\n\nYou just watch the payments roll in.\n\nThe average freelancer spends 2+ hours per week chasing payments.\n\nWith automated reminders:\n• Payment time drops from 21 days → 8 days\n• Zero awkward \"hey just checking in\" emails at 11pm\n• Professional relationship maintained throughout\n\nI'm looking for 50 founding members to get early access at $15/mo forever.\n\nJoin the waitlist: https://remindflow-silk.vercel.app/",
+    "scheduled": false
+  },
+  {
+    "platform": "twitter",
+    "type": "single",
+    "content": "Hot take: If you're a freelancer and you're not following up on late invoices, you're leaving money on the table.\n\nThe average freelancer has $2,400 in unpaid invoices at any given time.\n\nAutomate the follow-ups. Get paid faster.\n\nI built a tool for this: https://remindflow-silk.vercel.app/",
+    "scheduled": false
+  },
+  {
+    "platform": "linkedin",
+    "type": "post",
+    "content": "The #1 reason freelancers don't get paid on time?\n\nIt's not difficult clients.\nIt's not budget issues.\nIt's not payment processing delays.\n\nIt's silence.\n\nMost freelancers send an invoice and then... forget about it. By the time they remember to follow up, it's been 3 weeks and the conversation feels awkward.\n\nI'm building RemindFlow to solve this. Automated, polite payment reminders that sound human.\n\n• Connect your invoices\n• Set your reminder schedule\n• Get paid 3x faster\n\nEarly access is open. Link in comments.\n\n#freelancing #invoicing #payments #automation",
+    "scheduled": false
+  }
+]
