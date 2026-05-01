@@ -141,16 +141,16 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-6">
             <a
+              href="/pricing"
+              className="text-sm text-white/40 hover:text-emerald-400 transition-colors duration-300 font-medium"
+            >
+              Pricing
+            </a>
+            <a
               href="/login"
               className="text-sm text-white/40 hover:text-white transition-colors duration-300 font-medium"
             >
               Sign In
-            </a>
-            <a
-              href="#waitlist"
-              className="text-sm text-white/40 hover:text-emerald-400 transition-colors duration-300 font-medium"
-            >
-              Join Waitlist
             </a>
           </div>
         </div>
@@ -491,7 +491,7 @@ export default function Home() {
                 step: '01',
                 image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',
                 title: 'Connect your invoices',
-                desc: 'Import from Stripe, Wave, PayPal, or upload a CSV. Takes 2 minutes, not 2 hours.',
+                desc: 'Upload a CSV from any tool or connect Stripe, Wave, PayPal directly. Takes 2 minutes, not 2 hours.',
               },
               {
                 step: '02',
@@ -782,10 +782,10 @@ export default function Home() {
                   ))}
                 </ul>
                 <a
-                  href="#waitlist"
+                  href="/pricing"
                   className="block text-center px-6 py-4 rounded-2xl border border-white/10 hover:border-emerald-500/50 hover:text-emerald-400 transition-all duration-300 font-medium"
                 >
-                  Join Waitlist
+                  Get Started
                 </a>
               </div>
             </Reveal>
@@ -821,10 +821,10 @@ export default function Home() {
                   ))}
                 </ul>
                 <a
-                  href="#waitlist"
+                  href="/pricing"
                   className="block text-center px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-black font-semibold transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  Join Waitlist
+                  Get Started
                 </a>
               </div>
             </Reveal>
@@ -844,7 +844,7 @@ export default function Home() {
             {[
               {
                 q: 'What invoicing tools do you support?',
-                a: "Right now you can import invoices via CSV from any tool. We're building direct integrations with Stripe, Wave, and PayPal for launch.",
+                a: "You can import invoices via CSV from any tool — just drag and drop. We're also building direct integrations with Stripe, Wave, and PayPal.",
               },
               {
                 q: 'Will the emails sound robotic?',
@@ -950,8 +950,9 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-8 text-sm text-white/15">
-            <a href="#" className="hover:text-white/40 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white/40 transition-colors">Terms</a>
+            <a href="/privacy" className="hover:text-white/40 transition-colors">Privacy</a>
+            <a href="/terms" className="hover:text-white/40 transition-colors">Terms</a>
+            <a href="/pricing" className="hover:text-white/40 transition-colors">Pricing</a>
             <a href="mailto:hello@remindflow.app" className="hover:text-white/40 transition-colors">Contact</a>
           </div>
         </div>
