@@ -1,24 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabase } from '@/lib/supabase';
+import { getSupabaseWithToken } from '@/lib/supabase';
+
+function getAuthenticatedClient(request: NextRequest) {
+  const accessToken = request.cookies.get('sb-access-token')?.value;
+  if (!accessToken) return null;
+  return getSupabaseWithToken(accessToken);
+}
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = getSupabase();
-    const { id } = await params;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const supabase = getAuthenticatedClient(request);
+    if (!supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+
+    const { id } = await params;
 
     const { data: invoice, error } = await supabase
       .from('invoices')
       .select('*, reminder_logs(*)')
       .eq('id', id)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single();
 
     if (error || !invoice) {
@@ -36,21 +44,21 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = getSupabase();
-    const { id } = await params;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const supabase = getAuthenticatedClient(request);
+    if (!supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+
+    const { id } = await params;
     const body = await request.json();
 
-    const { data: invoice, error } = await (supabase
-      .from('invoices') as any)
+    const { data: invoice, error } = await (supabase.from('invoices') as any)
       .update(body)
       .eq('id', id)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .select()
       .single();
 
@@ -69,19 +77,20 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = getSupabase();
-    const { id } = await params;
-
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const supabase = getAuthenticatedClient(request);
+    if (!supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { error } = await supabase
-      .from('invoices')
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
+
+    const { id } = await params;
+
+    const { error } = await (supabase.from('invoices') as any)
       .delete()
       .eq('id', id)
-      .eq('user_id', session.user.id);
+      .eq('user_id', user.id);
 
     if (error) {
       return NextResponse.json({ error: 'Failed to delete invoice' }, { status: 500 });

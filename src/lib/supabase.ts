@@ -17,6 +17,24 @@ export function getSupabase() {
 }
 
 /**
+ * Creates a Supabase client authenticated with a specific access token.
+ * Use in API routes where you have the token from cookies.
+ */
+export function getSupabaseWithToken(accessToken: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase environment variables not configured');
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
+    auth: { persistSession: false },
+  });
+}
+
+/**
  * Server-side client with service role key for admin operations.
  * Only use in API routes and server components.
  */

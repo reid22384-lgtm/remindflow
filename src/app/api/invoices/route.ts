@@ -1,21 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSupabase } from '@/lib/supabase';
+import { getSupabaseWithToken } from '@/lib/supabase';
+
+function getAuthenticatedClient(request: NextRequest) {
+  const accessToken = request.cookies.get('sb-access-token')?.value;
+  if (!accessToken) return null;
+  return getSupabaseWithToken(accessToken);
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = getSupabase();
-
-    // Get session
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const supabase = getAuthenticatedClient(request);
+    if (!supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from token
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
     // Fetch invoices for this user
     const { data: invoices, error } = await supabase
       .from('invoices')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -32,12 +41,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getSupabase();
-
-    // Get session
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const supabase = getAuthenticatedClient(request);
+    if (!supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -54,7 +65,6 @@ export async function POST(request: NextRequest) {
       notes,
     } = body;
 
-    // Validate required fields
     if (!client_name || !client_email || !invoice_number || !amount || !due_date) {
       return NextResponse.json(
         { error: 'Missing required fields: client_name, client_email, invoice_number, amount, due_date' },
@@ -65,7 +75,7 @@ export async function POST(request: NextRequest) {
     const { data: invoice, error } = await supabase
       .from('invoices')
       .insert({
-        user_id: session.user.id,
+        user_id: user.id,
         client_name,
         client_email,
         invoice_number,

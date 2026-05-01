@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Invoice {
   id: string;
@@ -23,6 +24,7 @@ interface Stats {
 }
 
 export default function AppDashboard() {
+  const router = useRouter();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalOutstanding: 0,
@@ -31,6 +33,24 @@ export default function AppDashboard() {
     pendingInvoices: 0,
   });
   const [loading, setLoading] = useState(true);
+
+  // Handle magic link redirect with tokens in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+
+    if (accessToken) {
+      fetch('/api/auth/set-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+      }).then(() => {
+        // Clean URL
+        router.replace('/app');
+      });
+    }
+  }, [router]);
 
   useEffect(() => {
     fetchInvoices();
