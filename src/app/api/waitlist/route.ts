@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { sendThankYouEmail } from '@/lib/email';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -52,6 +53,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Send thank you email (non-blocking)
+    sendThankYouEmail(email);
 
     return NextResponse.json(
       { message: 'Successfully joined the waitlist!' },
