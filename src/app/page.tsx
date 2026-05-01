@@ -67,6 +67,19 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState('');
   const [scrollY, setScrollY] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [signupCount, setSignupCount] = useState(247); // fallback
+
+  // Fetch real signup count
+  useEffect(() => {
+    fetch('/api/dashboard')
+      .then(res => res.json())
+      .then(data => {
+        if (data.stats?.totalSignups > 0) {
+          setSignupCount(data.stats.totalSignups);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -265,7 +278,7 @@ export default function Home() {
                   />
                 ))}
                 <div className="w-11 h-11 rounded-full border-2 border-[#030303] bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-400">
-                  +242
+                  +{Math.max(0, signupCount - 5)}
                 </div>
               </div>
               <div className="text-center sm:text-left">
@@ -277,7 +290,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-white/30 text-sm">
-                  <span className="text-white/60 font-medium">247 freelancers</span> already on the waitlist
+                  <span className="text-white/60 font-medium">{signupCount} freelancers</span> already on the waitlist
                 </p>
               </div>
             </div>
@@ -929,7 +942,7 @@ export default function Home() {
               </div>
             )}
             {status === 'error' && <p className="text-red-400 text-sm mb-4">{errorMessage}</p>}
-            <p className="text-white/15 text-sm">247 freelancers already on the waitlist</p>
+            <p className="text-white/15 text-sm">{signupCount} freelancers already on the waitlist</p>
           </Reveal>
         </div>
       </section>
