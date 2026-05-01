@@ -1,23 +1,13 @@
+import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 
-const WAITLIST_FILE = path.join(process.cwd(), 'data', 'waitlist.json');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-function ensureFile() {
-  const dir = path.dirname(WAITLIST_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  if (!fs.existsSync(WAITLIST_FILE)) {
-    fs.writeFileSync(WAITLIST_FILE, JSON.stringify([]));
-  }
-}
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function POST(request: NextRequest) {
   try {
-    ensureFile();
-
     const body = await request.json();
     const { email } = body;
 
@@ -28,21 +18,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const waitlist = JSON.parse(fs.readFileSync(WAITLIST_FILE, 'utf-8'));
+    // Check for duplicate
+    const { data: existing } = await supabase
+      .from('waitlist')
+      .select('id')
+      .eq('email', email)
+      .single();
 
-    if (waitlist.some((entry: { email: string }) => entry.email === email)) {
+    if (existing) {
       return NextResponse.json(
         { error: 'This email is already on the waitlist.' },
         { status: 409 }
       );
     }
 
-    waitlist.push({
-      email,
-      timestamp: new Date().toISOString(),
-    });
+    // Insert
+    const { error } = await supabase
+      .from('waitlist')
+      .insert({ email });
 
-    fs.writeFileSync(WAITLIST_FILE, JSON.stringify(waitlist, null, 2));
+    if (error) {
+      console.error('Supabase insert error:', error);
+      return NextResponse.json(
+        { error: 'Something went wrong. Please try again.' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { message: 'Successfully joined the waitlist!' },
