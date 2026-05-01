@@ -27,21 +27,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'No waitlist subscribers found', sent: 0 });
     }
 
+    // Debug: check env vars
+    const hasResendKey = !!process.env.RESEND_API_KEY;
+    const resendKeyPrefix = process.env.RESEND_API_KEY?.substring(0, 8) || 'none';
+    console.log(`RESEND_API_KEY present: ${hasResendKey}, prefix: ${resendKeyPrefix}`);
+
     // Send launch email to each subscriber
     const results: { email: string; success: boolean; error?: string }[] = [];
 
     for (const { email } of waitlist) {
       try {
+        console.log(`Sending launch email to: ${email}`);
         const result = await sendLaunchEmail(email);
+        console.log(`Result for ${email}:`, JSON.stringify(result));
         results.push({
           email,
           success: result?.success ?? false,
-          error: result?.success ? undefined : String(result?.error),
+          error: result?.success ? undefined : JSON.stringify(result?.error),
         });
         // Small delay to avoid rate limiting
         await new Promise((r) => setTimeout(r, 200));
-      } catch (err) {
-        results.push({ email, success: false, error: String(err) });
+      } catch (err: any) {
+        console.error(`Error sending to ${email}:`, err);
+        results.push({ email, success: false, error: err?.message || String(err) });
       }
     }
 
