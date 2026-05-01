@@ -20,5 +20,27 @@
     "type": "reddit",
     "message": "Reddit opportunity searches generated",
     "searches": 3
+  },
+  {
+    "timestamp": "2026-05-01T02:55:13.378Z",
+    "type": "directories",
+    "message": "Directory submission status checked",
+    "total": 5,
+    "ready": 3
+  },
+  {
+    "timestamp": "2026-05-01T02:55:13.380Z",
+    "type": "content",
+    "message": "Generated 3 social media posts",
+    "platforms": [
+      "twitter",
+      "linkedin"
+    ]
+  },
+  {
+    "timestamp": "2026-05-01T02:55:13.381Z",
+    "type": "reddit",
+    "message": "Reddit opportunity searches generated",
+    "searches": 3
   }
 ]

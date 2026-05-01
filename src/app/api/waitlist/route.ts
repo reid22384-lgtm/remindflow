@@ -1,11 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { sendThankYouEmail } from '@/lib/email';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,13 +14,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!supabaseUrl || !supabaseAnonKey) {
+    if (!isSupabaseConfigured()) {
       console.error('Supabase env vars not configured');
       return NextResponse.json(
         { error: 'Service temporarily unavailable. Please try again later.' },
         { status: 503 }
       );
     }
+
+    const supabase = getSupabase();
 
     // Check for duplicate
     const { data: existing } = await supabase
@@ -44,7 +41,7 @@ export async function POST(request: NextRequest) {
     // Insert
     const { error } = await supabase
       .from('waitlist')
-      .insert({ email });
+      .insert({ email } as any);
 
     if (error) {
       console.error('Supabase insert error:', error);
