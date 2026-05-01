@@ -166,12 +166,20 @@ export default function Home() {
             </div>
             <span className="font-semibold text-xl tracking-tight">RemindFlow</span>
           </div>
-          <a
-            href="#waitlist"
-            className="text-sm text-white/40 hover:text-emerald-400 transition-colors duration-300 font-medium"
-          >
-            Join Waitlist
-          </a>
+          <div className="flex items-center gap-6">
+            <a
+              href="/login"
+              className="text-sm text-white/40 hover:text-white transition-colors duration-300 font-medium"
+            >
+              Sign In
+            </a>
+            <a
+              href="#waitlist"
+              className="text-sm text-white/40 hover:text-emerald-400 transition-colors duration-300 font-medium"
+            >
+              Join Waitlist
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -247,11 +255,16 @@ export default function Home() {
             </form>
 
             {status === 'success' && (
-              <div className="flex items-center justify-center gap-2 text-emerald-400 mb-4 animate-scale-in">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="font-medium">You're on the list! We'll email you when we launch.</span>
+              <div className="flex flex-col items-center justify-center gap-2 text-emerald-400 mb-4 animate-scale-in">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="font-medium">You're on the list!</span>
+                </div>
+                <a href="/login" className="text-sm text-emerald-300/70 hover:text-emerald-300 underline underline-offset-4 transition">
+                  Try the app now →
+                </a>
               </div>
             )}
             {status === 'error' && <p className="text-red-400 text-sm mb-4">{errorMessage}</p>}
@@ -934,11 +947,16 @@ export default function Home() {
               </button>
             </form>
             {status === 'success' && (
-              <div className="flex items-center justify-center gap-2 text-emerald-400 mb-4 animate-scale-in">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="font-medium">You're on the list! We'll email you when we launch.</span>
+              <div className="flex flex-col items-center justify-center gap-2 text-emerald-400 mb-4 animate-scale-in">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="font-medium">You're on the list!</span>
+                </div>
+                <a href="/login" className="text-sm text-emerald-300/70 hover:text-emerald-300 underline underline-offset-4 transition">
+                  Try the app now →
+                </a>
               </div>
             )}
             {status === 'error' && <p className="text-red-400 text-sm mb-4">{errorMessage}</p>}
