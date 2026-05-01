@@ -10,21 +10,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const body = await request.json();
+    const testEmail = body?.test_email as string | undefined;
+
     const supabase = getSupabaseAdmin();
 
-    // Fetch all waitlist emails
-    const { data: waitlist, error } = await supabase
-      .from('waitlist')
-      .select('email')
-      .order('created_at', { ascending: true });
+    // If test_email provided, send only to that address
+    let emails: string[];
+    if (testEmail) {
+      emails = [testEmail];
+    } else {
+      // Fetch all waitlist emails
+      const { data: waitlist, error } = await supabase
+        .from('waitlist')
+        .select('email')
+        .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Failed to fetch waitlist:', error);
-      return NextResponse.json({ error: 'Failed to fetch waitlist' }, { status: 500 });
-    }
+      if (error) {
+        console.error('Failed to fetch waitlist:', error);
+        return NextResponse.json({ error: 'Failed to fetch waitlist' }, { status: 500 });
+      }
 
-    if (!waitlist || waitlist.length === 0) {
-      return NextResponse.json({ message: 'No waitlist subscribers found', sent: 0 });
+      if (!waitlist || waitlist.length === 0) {
+        return NextResponse.json({ message: 'No waitlist subscribers found', sent: 0 });
+      }
+
+      emails = waitlist.map((w: any) => w.email);
     }
 
     // Debug: check env vars
@@ -35,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Send launch email to each subscriber
     const results: { email: string; success: boolean; error?: string }[] = [];
 
-    for (const { email } of waitlist) {
+    for (const email of emails) {
       try {
         console.log(`Sending launch email to: ${email}`);
         const result = await sendLaunchEmail(email);
@@ -57,10 +68,11 @@ export async function POST(request: NextRequest) {
     const failed = results.filter((r) => !r.success).length;
 
     return NextResponse.json({
-      message: `Launch emails sent to ${sent} of ${waitlist.length} subscribers`,
-      total: waitlist.length,
+      message: `Launch emails sent to ${sent} of ${emails.length} subscriber${testEmail ? ' (test mode)' : 's'}`,
+      total: emails.length,
       sent,
       failed,
+      test_mode: !!testEmail,
       results,
     });
   } catch (error) {
